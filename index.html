@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Virtual DOM test</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/6.3.1/css/foundation-flex.min.css">
+    <style>
+      .is-temp-hidden {
+        visibility: hidden;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="column row">
+      <section>
+        <h2>Vanilla JS</h2>
+
+        <ul data-tabs class="tabs" id="js-tabs" data-wrap-on-keys="false" data-match-height="true" data-auto-focus="true" data-active-collapse="true">
+          <li class="tabs-title"><a href="#js-one">One</a></li>
+          <li class="tabs-title"><a href="#js-two">Two</a></li>
+        </ul>
+
+        <div class="tabs-content" data-tabs-content="js-tabs">
+          <div class="tabs-panel" id="js-one">One!</div>
+          <div class="tabs-panel" id="js-two">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores maxime pariatur ullam earum alias, corporis omnis ut, incidunt commodi, nulla veniam sequi tempore error. Repudiandae quasi perspiciatis illum fugit quisquam?</div>
+        </div>
+      </section>
+
+      <hr>
+
+      <section>
+        <h2>React</h2>
+
+        <div id="react"></div>
+      </section>
+    </div>
+
+    <script src="bundle.js"></script>
+  </body>
+</html>
