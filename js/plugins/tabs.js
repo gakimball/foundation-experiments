@@ -12,7 +12,7 @@ export default class TabPlugin extends Plugin {
   constructor(elem, options) {
     super(elem, options);
     this.state = new TabState(this.elem, this.options);
-    this.state.listen(this.update.bind(this));
+    this.state.listen(this.update);
     this.initialFocusChecked = false;
     this.setup();
   }
@@ -23,9 +23,7 @@ export default class TabPlugin extends Plugin {
     this.paneContainer = document.querySelector(`[data-tabs-content="${this.elem.id}"]`);
 
     // Event listeners
-    this.handleTabClick = this.handleTabClick.bind(this);
     this.elem.addEventListener('click', this.handleTabClick);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
     this.elem.addEventListener('keydown', this.handleKeyDown);
 
     const maxHeight = this.options.matchHeight ? this.state.getTallestTab() : null;
@@ -58,14 +56,14 @@ export default class TabPlugin extends Plugin {
     this.state.fetch();
   }
 
-  handleTabClick({ target }) {
+  handleTabClick = ({ target }) => {
     if (target.getAttribute('role') === 'tab') {
       const index = Array.prototype.indexOf.call(this.tabs, target.parentNode);
       this.state.toggleTab(index);
     }
   }
 
-  handleKeyDown({ key }) {
+  handleKeyDown = ({ key }) => {
     this.state.handleKey(key);
   }
 
@@ -74,7 +72,7 @@ export default class TabPlugin extends Plugin {
     this.elem.removeEventListener('keydown', this.handleKeyDown);
   }
 
-  update(prop, oldValue, newValue) {
+  update = (prop, oldValue, newValue) => {
     switch (prop) {
       case 'activeTab': {
         this.unHighlightTab(oldValue);
