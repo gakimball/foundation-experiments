@@ -34,7 +34,6 @@ export class TabsTitle extends Component {
     return (
       <li
         className={cls('tabs-title', { 'is-active': selected })}
-        role="presentation"
         onClick={this.handleClick}
       >
         <a

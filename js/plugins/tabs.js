@@ -1,5 +1,6 @@
 import Plugin from '../util/plugin';
 import TabState from '../../core/tabs';
+import applyAttrs from '../util/apply-attrs';
 
 export default class TabPlugin extends Plugin {
   static options = {
@@ -26,30 +27,16 @@ export default class TabPlugin extends Plugin {
     this.event(this.elem, 'click', this.handleTabClick);
     this.event(this.elem, 'keydown', this.handleKeyDown);
 
-    const maxHeight = this.options.matchHeight ? this.state.getTallestTab() : null;
-
     // Initial DOM changes
-    this.tabs.forEach(tab => {
+    this.tabs.forEach((tab, index) => {
       const anchor = tab.querySelector('a');
-      const tabTarget = anchor.getAttribute('href').replace(/^#/, '');
-      const pane = this.paneContainer.querySelector(`#${tabTarget}`);
-      const anchorLabel = `${tabTarget}-label`;
+      const target = this.state.getTabTarget(index);
+      const pane = document.getElementById(target);
 
       requestAnimationFrame(() => {
-        tab.setAttribute('role', 'presentation');
-
-        anchor.id = anchorLabel;
-        anchor.setAttribute('role', 'tab')
-        anchor.setAttribute('aria-selected', 'false');
-        anchor.setAttribute('aria-controls', tabTarget);
-
-        pane.setAttribute('role', 'tabpanel');
-        pane.setAttribute('aria-hidden', 'true');
-        pane.setAttribute('aria-labelledby', anchorLabel);
-
-        if (maxHeight) {
-          pane.style.height = `${maxHeight}px`;
-        }
+        applyAttrs(tab, this.state.getTitleAttrs(index));
+        applyAttrs(anchor, this.state.getTitleAnchorAttrs(index));
+        applyAttrs(pane, this.state.getPanelAttrs(target));
       });
     });
 
@@ -70,10 +57,10 @@ export default class TabPlugin extends Plugin {
   update = (prop, oldValue, newValue) => {
     switch (prop) {
       case 'activeTab': {
-        this.unHighlightTab(oldValue);
-        this.highlightTab(newValue);
-        this.hideTabPane(oldValue);
-        this.showTabPane(newValue);
+        this.updateTab(newValue);
+        this.updateTab(oldValue, true);
+        this.updateTabPane(newValue);
+        this.updateTabPane(oldValue, true);
       }
     }
   }
@@ -84,59 +71,36 @@ export default class TabPlugin extends Plugin {
     return document.querySelector(target);
   }
 
-  highlightTab(index) {
+  updateTab(index, hide = false) {
     if (typeof index === 'number') {
       const tab = this.tabs[index];
       const anchor = tab.querySelector('a');
 
       requestAnimationFrame(() => {
-        tab.classList.add('is-active');
-        anchor.setAttribute('aria-selected', 'true');
-        anchor.setAttribute('tabindex', '0');
+        const method = hide ? 'remove' : 'add';
+        anchor.classList[method]('is-active');
+        applyAttrs(anchor, this.state.getTitleAnchorAttrs(index));
 
-        if (this.initialFocusChecked || this.options.autoFocus) {
-          anchor.focus();
-        } else {
-          this.initialFocusChecked = true;
+        if (!hide) {
+          if (this.initialFocusChecked || this.options.autoFocus) {
+            anchor.focus();
+          } else {
+            this.initialFocusChecked = true;
+          }
         }
       });
     }
   }
 
-  unHighlightTab(index) {
+  updateTabPane(index, hide = false) {
     if (typeof index === 'number') {
-      const tab = this.tabs[index];
-      const anchor = tab.querySelector('a');
-
-      requestAnimationFrame(() => {
-        tab.classList.remove('is-active');
-        anchor.setAttribute('aria-selected', 'false');
-        anchor.setAttribute('tabindex', '-1');
-      });
-    }
-  }
-
-  showTabPane(index) {
-    if (typeof index === 'number') {
-      const pane = this.getTabPane(index);
+      const pane = document.getElementById(this.state.getTabTarget(index));
 
       if (pane) {
         requestAnimationFrame(() => {
-          pane.classList.add('is-active');
-          pane.setAttribute('aria-hidden', 'false');
-        });
-      }
-    }
-  }
-
-  hideTabPane(index) {
-    if (typeof index === 'number') {
-      const pane = this.getTabPane(index);
-
-      if (pane) {
-        requestAnimationFrame(() => {
-          pane.classList.remove('is-active');
-          pane.setAttribute('aria-hidden', 'true');
+          const method = hide ? 'remove' : 'add';
+          pane.classList[method]('is-active');
+          applyAttrs(pane, this.state.getPanelAttrs(pane.id));
         });
       }
     }

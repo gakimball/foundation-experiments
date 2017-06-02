@@ -8,14 +8,17 @@ export default class TabState extends StateContainer {
       activeTab: 0,
     };
 
-    this.tabCount = 0;
+    this.tabs = [];
     this.elem = elem;
+    this.maxHeight = 0;
 
-    this.checkElem();
+    this.parseDOM();
   }
 
-  checkElem() {
-    this.tabCount = this.elem.querySelectorAll('.tabs-title').length;
+  parseDOM() {
+    this.tabs = Array.prototype.slice.call(this.elem.querySelectorAll('.tabs-title')).map(
+      tab => tab.querySelector('a').getAttribute('href').replace(/^#/, '')
+    );
   }
 
   handleKey(key) {
@@ -38,7 +41,7 @@ export default class TabState extends StateContainer {
   tabForward() {
     const nextIndex = this.state.activeTab + 1;
 
-    if (nextIndex >= this.tabCount) {
+    if (nextIndex >= this.tabs.length) {
       if (this.options.wrapOnKeys) {
         this.update('activeTab', 0);
       }
@@ -52,7 +55,7 @@ export default class TabState extends StateContainer {
 
     if (nextIndex < 0) {
       if (this.options.wrapOnKeys) {
-        this.update('activeTab', this.tabCount - 1);
+        this.update('activeTab', this.tabs.length - 1);
       }
     } else {
       this.update('activeTab', nextIndex);
@@ -84,6 +87,46 @@ export default class TabState extends StateContainer {
       pane.classList.remove('is-temp-hidden');
     });
 
-    return maxHeight;
+    this.maxHeight = maxHeight;
+    return this.maxHeight;
+  }
+
+  getTabTarget(index) {
+    return this.tabs[index];
+  }
+
+  getTitleAttrs(index) {
+    return {
+      role: 'presentation',
+    };
+  }
+
+  getTitleAnchorAttrs(index) {
+    const target = this.tabs[index];
+    const active = index === this.state.activeTab;
+
+    return {
+      id: `${target}-label`,
+      role: 'tab',
+      'aria-selected': active,
+      'aria-controls': target,
+      tabindex: active ? 0 : -1,
+    };
+  }
+
+  getPanelAttrs(id) {
+    const tabIndex = this.tabs.indexOf(id);
+
+    return {
+      role: 'tabpanel',
+      'aria-hidden': tabIndex !== this.state.activeTab,
+      'aria-labelledby': `${id}-label`,
+    };
+  }
+
+  getPanelStyle(id) {
+    return {
+      height: this.options.matchHeight ? this.maxHeight : undefined,
+    };
   }
 }
