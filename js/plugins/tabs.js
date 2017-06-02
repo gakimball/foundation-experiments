@@ -23,8 +23,8 @@ export default class TabPlugin extends Plugin {
     this.paneContainer = document.querySelector(`[data-tabs-content="${this.elem.id}"]`);
 
     // Event listeners
-    this.elem.addEventListener('click', this.handleTabClick);
-    this.elem.addEventListener('keydown', this.handleKeyDown);
+    this.event(this.elem, 'click', this.handleTabClick);
+    this.event(this.elem, 'keydown', this.handleKeyDown);
 
     const maxHeight = this.options.matchHeight ? this.state.getTallestTab() : null;
 
@@ -65,11 +65,6 @@ export default class TabPlugin extends Plugin {
 
   handleKeyDown = ({ key }) => {
     this.state.handleKey(key);
-  }
-
-  destroy() {
-    this.elem.removeEventListener('click', this.handleTabClick);
-    this.elem.removeEventListener('keydown', this.handleKeyDown);
   }
 
   update = (prop, oldValue, newValue) => {

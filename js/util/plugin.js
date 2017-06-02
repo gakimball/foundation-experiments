@@ -8,6 +8,18 @@ export default class Plugin {
 
     this.elem = elem;
     this.options = this.getOptions();
+    this.eventHandlers = [];
+  }
+
+  event(target, event, func) {
+    target.addEventListener(event, func);
+    this.eventHandlers.push({ target, event, func });
+  }
+
+  destroy() {
+    this.eventHandlers.forEach(({ target, event, func }) => {
+      target.removeEventListener(event, func);
+    });
   }
 
   getOptions() {
