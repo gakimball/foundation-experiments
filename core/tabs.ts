@@ -1,8 +1,32 @@
 import StateContainer from './state-container';
 
-export default class TabState extends StateContainer {
-  constructor(elem, options) {
-    super(elem, options);
+/**
+ * Options that can be passed to a tab instance.
+ */
+interface TabOptions {
+  activeCollapse: boolean,
+  autoFocus: boolean,
+  matchHeight: boolean,
+  wrapOnKeys: boolean,
+}
+
+/**
+ * Internal state maintained by tabs.
+ */
+interface TabStateInternal {
+  activeTab: number,
+};
+
+/**
+ * State container for a tab plugin.
+ */
+export default class TabState extends StateContainer<TabOptions, TabStateInternal> {
+  tabs: string[] = []
+  maxHeight: number = 0
+  elem: Element
+
+  constructor(elem: Element, options: TabOptions) {
+    super();
 
     this.state = {
       activeTab: 0,
@@ -10,18 +34,17 @@ export default class TabState extends StateContainer {
 
     this.tabs = [];
     this.elem = elem;
-    this.maxHeight = 0;
 
     this.parseDOM();
   }
 
-  parseDOM() {
+  parseDOM(): void {
     this.tabs = Array.prototype.slice.call(this.elem.querySelectorAll('.tabs-title')).map(
       tab => tab.querySelector('a').getAttribute('href').replace(/^#/, '')
     );
   }
 
-  handleKey(key) {
+  handleKey(key: string): void {
     switch (key) {
       case 'ArrowRight':
       case 'ArrowDown':
@@ -38,8 +61,8 @@ export default class TabState extends StateContainer {
     }
   }
 
-  tabForward() {
-    const nextIndex = this.state.activeTab + 1;
+  tabForward(): void {
+    const nextIndex: number = this.state.activeTab + 1;
 
     if (nextIndex >= this.tabs.length) {
       if (this.options.wrapOnKeys) {
@@ -50,8 +73,8 @@ export default class TabState extends StateContainer {
     }
   }
 
-  tabBackward() {
-    const nextIndex = this.state.activeTab - 1;
+  tabBackward(): void {
+    const nextIndex: number = this.state.activeTab - 1;
 
     if (nextIndex < 0) {
       if (this.options.wrapOnKeys) {
@@ -74,36 +97,39 @@ export default class TabState extends StateContainer {
     }
   }
 
-  getTallestTab() {
-    const panes = document.querySelectorAll(`[data-tabs-content="${this.elem.id}"] .tabs-panel`);
-    let maxHeight = 0;
+  getTallestTab(): number {
+    const panes: NodeListOf<Element> = document.querySelectorAll(`[data-tabs-content="${this.elem.id}"] .tabs-panel`);
+    let maxHeight: number = 0;
 
-    panes.forEach(pane => {
+    for (let i = 0; i < panes.length; i++) {
+      const pane: Element = panes[i];
       pane.classList.add('is-temp-hidden');
       const { height } = pane.getBoundingClientRect();
+
       if (height > maxHeight) {
         maxHeight = height;
       }
+
       pane.classList.remove('is-temp-hidden');
-    });
+    }
 
     this.maxHeight = maxHeight;
     return this.maxHeight;
   }
 
-  getTabTarget(index) {
+  getTabTarget(index: number): string {
     return this.tabs[index];
   }
 
-  getTitleAttrs(index) {
+  getTitleAttrs(index: number): object {
     return {
       role: 'presentation',
     };
   }
 
-  getTitleAnchorAttrs(index) {
-    const target = this.tabs[index];
-    const active = index === this.state.activeTab;
+  getTitleAnchorAttrs(index: number): object {
+    const target: string = this.tabs[index];
+    const active: boolean = index === this.state.activeTab;
 
     return {
       id: `${target}-label`,
@@ -114,8 +140,8 @@ export default class TabState extends StateContainer {
     };
   }
 
-  getPanelAttrs(id) {
-    const tabIndex = this.tabs.indexOf(id);
+  getPanelAttrs(id: string): object {
+    const tabIndex: number = this.tabs.indexOf(id);
 
     return {
       role: 'tabpanel',
@@ -124,7 +150,7 @@ export default class TabState extends StateContainer {
     };
   }
 
-  getPanelStyle(id) {
+  getPanelStyle(id: number): object {
     return {
       height: this.options.matchHeight ? this.maxHeight : undefined,
     };

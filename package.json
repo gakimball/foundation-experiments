@@ -19,6 +19,8 @@
     "prop-types": "^15.5.10",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
+    "ts-loader": "^2.1.0",
+    "typescript": "^2.3.4",
     "virtual-dom": "^2.1.1",
     "webpack": "^2.6.1"
   },
