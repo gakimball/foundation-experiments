@@ -10,8 +10,10 @@ export default class TabPlugin extends Plugin {
     wrapOnKeys: [Boolean, true],
   }
 
-  constructor(elem, options) {
-    super(elem, options);
+  static identifier = 'tabs'
+
+  constructor(elem, options, id) {
+    super(elem, options, id);
     this.state = new TabState(this.elem, this.options);
     this.state.listen(this.update);
     this.initialFocusChecked = false;
@@ -41,6 +43,7 @@ export default class TabPlugin extends Plugin {
     });
 
     this.state.fetch();
+    this.ready();
   }
 
   handleTabClick = ({ target }) => {

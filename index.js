@@ -1,9 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import TabPlugin from './js/plugins/tabs';
+import Foundation from './js';
+import * as Plugins from './js/plugins';
 import { Tabs, TabsTitle, TabsContent, TabsPanel } from './react/components/tabs';
 
-new TabPlugin(document.querySelector('[data-tabs]'), {});
+Foundation.init(Plugins);
+document.querySelector('#js-tabs').addEventListener('ready.zf.tabs', () => {
+  console.log(Foundation.get('#js-tabs'));
+});
 
 const App = (
   <div>
