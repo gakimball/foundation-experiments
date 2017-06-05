@@ -1,6 +1,14 @@
 import _ from 'lodash';
 
+/**
+ * Base plugin class.
+ */
 export default class Plugin {
+  /**
+   * Initialize a plugin, storing a reference to the container DOM element, and parsing options from the HTML.
+   * @param {HTMLElement} elem - Container element.
+   * @param {Object} options - Plugin instance options.
+   */
   constructor(elem, options) {
     if (this.constructor === Plugin) {
       throw new Error('Do not call the Plugin class directly.');
@@ -11,18 +19,58 @@ export default class Plugin {
     this.eventHandlers = [];
   }
 
+  /**
+   * Register an event listener for a plugin element.
+   * @param {HTMLElement} target - Event target.
+   * @param {String} event - Event to listen to.
+   * @param {Function} func - Callback to run when event fires.
+   */
   event(target, event, func) {
     target.addEventListener(event, func);
     this.eventHandlers.push({ target, event, func });
   }
 
+  /**
+   * Trigger a custom event, optionally with data. The event name is automatically namespaced.
+   * @param {String} name - Name of event.
+   * @param [data] - Data to pass to event.
+   */
+  trigger(name, data = null) {
+    const eventName = `${name}.zf.${this.constructor.identifier}`;
+    let event;
+
+    if (window.CustomEvent) {
+      event = new CustomEvent(eventName, { detail: data });
+    } else {
+      event = document.createEvent('CustomEvent');
+      event.initCustomEvent(eventName, true, true, data);
+    }
+
+    this.elem.dispatchEvent(event);
+  }
+
+  /**
+   * Finish destroying a plugin by removing all event listeners, and finally firing a `destroyed` event. A plugin should call this in its own `destroy` event *after* all cleanup has been done, using `super.destroy();`.
+   */
   destroy() {
     this.eventHandlers.forEach(({ target, event, func }) => {
       target.removeEventListener(event, func);
     });
+    this.trigger('destroyed');
   }
 
+  /**
+   * Signal that a plugin instance is done initiailizing. A plugin should call this when it's done setting up the DOM.
+   */
+  ready() {
+    this.trigger('init');
+  }
+
+  /**
+   * Get the options for a plugin instance from the attributes on the HTML. Plugin options must be defined on a plugin class's static `options` property.
+   */
   getOptions() {
+    // Plugins with no options don't need any of this
     if (!this.constructor.options) {
       return {};
     }
