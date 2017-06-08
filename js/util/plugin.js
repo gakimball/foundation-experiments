@@ -100,6 +100,12 @@ export default class Plugin {
             } else {
               value = false;
             }
+          } else if (Array.isArray(type)) {
+            if (type.indexOf(attrValue) > -1) {
+              value = attrValue;
+            } else {
+              value = defaults[optionName][1];
+            }
           } else {
             value = type(attrValue);
           }
