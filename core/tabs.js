@@ -88,6 +88,7 @@ export default class TabState extends StateContainer {
     });
 
     this.maxHeight = maxHeight;
+    console.log(this.maxHeight);
     return this.maxHeight;
   }
 
@@ -126,7 +127,7 @@ export default class TabState extends StateContainer {
 
   getPanelStyle(id) {
     return {
-      height: this.options.matchHeight ? this.maxHeight : undefined,
+      height: this.options.matchHeight ? `${this.maxHeight}px` : undefined,
     };
   }
 }

@@ -1,6 +1,7 @@
 import Plugin from '../util/plugin';
 import TabState from '../../core/tabs';
 import applyAttrs from '../util/apply-attrs';
+import applyStyles from '../util/apply-styles';
 
 export default class TabPlugin extends Plugin {
   static options = {
@@ -24,6 +25,11 @@ export default class TabPlugin extends Plugin {
     // DOM element cache
     this.tabs = this.elem.querySelectorAll('.tabs-title');
     this.paneContainer = document.querySelector(`[data-tabs-content="${this.elem.id}"]`);
+
+    // Setup height matching for panes
+    if (this.options.matchHeight) {
+      this.state.getTallestTab();
+    }
 
     // Event listeners
     this.event(this.elem, 'click', this.handleTabClick);
@@ -104,6 +110,8 @@ export default class TabPlugin extends Plugin {
           const method = hide ? 'remove' : 'add';
           pane.classList[method]('is-active');
           applyAttrs(pane, this.state.getPanelAttrs(pane.id));
+          console.log(this.state.getPanelStyle());
+          applyStyles(pane, this.state.getPanelStyle(pane.id));
         });
       }
     }
