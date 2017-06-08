@@ -1,4 +1,11 @@
-export { Tabs } from './tabs';
-export { TabsTitle } from './tabs-title';
-export { TabsContent } from './tabs-content';
-export { TabsPanel } from './tabs-panel';
+import { Tabs } from './tabs';
+import { TabsTitle } from './tabs-title';
+import { TabsContent } from './tabs-content';
+import { TabsPanel } from './tabs-panel';
+
+export default {
+  Container: Tabs,
+  Title: TabsTitle,
+  Content: TabsContent,
+  Panel: TabsPanel,
+};
