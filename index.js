@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Foundation from './js';
-import * as Plugins from './js/plugins';
-import { Tabs, TabsTitle, TabsContent, TabsPanel } from './react/components/tabs';
+import Foundation from 'foundation';
+import * as Plugins from 'foundation/plugins';
+import { Tabs, TabsTitle, TabsContent, TabsPanel } from 'foundation-react/components/tabs';
 
 Foundation.init(Plugins);
 document.querySelector('#js-tabs').addEventListener('ready.zf.tabs', () => {
