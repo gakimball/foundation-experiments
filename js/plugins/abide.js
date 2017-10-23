@@ -1,6 +1,7 @@
 import AbideState from 'foundation-core/abide';
 import Plugin from '../util/plugin';
 import { closest, siblings } from '../util/dom';
+import registerPlugin from '../util/register-plugin';
 
 const FORM_ERROR_SELECTOR = '.form-error';
 
@@ -46,8 +47,8 @@ export default class Abide extends Plugin {
    * @param {Element} elem - Form container.
    * @param {?Object} options - Plugin options.
    */
-  constructor(elem, options, id) {
-    super(elem, options, id);
+  constructor(elem, options) {
+    super(elem, options);
 
     /**
      * Internal state for Abide.
@@ -251,4 +252,8 @@ export default class Abide extends Plugin {
   findRadioLabels(elems) {
     return elems.map(elem => this.findInputLabel(elem));
   }
+}
+
+if (__STANDALONE__) {
+  registerPlugin(Abide);
 }

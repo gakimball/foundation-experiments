@@ -2,6 +2,7 @@ import Plugin from '../util/plugin';
 import TabState from '../../core/tabs';
 import applyAttrs from '../util/apply-attrs';
 import applyStyles from '../util/apply-styles';
+import registerPlugin from '../util/register-plugin';
 
 export default class TabPlugin extends Plugin {
   static options = {
@@ -13,8 +14,8 @@ export default class TabPlugin extends Plugin {
 
   static identifier = 'tabs'
 
-  constructor(elem, options, id) {
-    super(elem, options, id);
+  constructor(elem, options) {
+    super(elem, options);
     this.state = new TabState(this.elem, this.options);
     this.state.listen(this.update);
     this.initialFocusChecked = false;
@@ -116,4 +117,8 @@ export default class TabPlugin extends Plugin {
       }
     }
   }
+}
+
+if (__STANDALONE__) {
+  registerPlugin(TabPlugin);
 }

@@ -8,9 +8,8 @@ export default class Plugin {
    * Initialize a plugin, storing a reference to the container DOM element, and parsing options from the HTML.
    * @param {HTMLElement} elem - Container element.
    * @param {Object} options - Plugin instance options.
-   * @param {String} id - Unique ID of plugin instance.
    */
-  constructor(elem, options, id) {
+  constructor(elem, options) {
     if (this.constructor === Plugin) {
       throw new Error('Do not call the Plugin class directly.');
     }
@@ -18,7 +17,6 @@ export default class Plugin {
     this.elem = elem;
     this.options = options || this.getOptions();
     this.eventHandlers = [];
-    this.elem.setAttribute('data-foundation-id', id);
   }
 
   /**

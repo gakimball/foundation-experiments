@@ -1,5 +1,4 @@
 import Plugin from './util/plugin';
-import uuid from './util/uuid';
 
 class Foundation {
   /**
@@ -9,10 +8,10 @@ class Foundation {
   plugins = {}
 
   /**
-   * Plugin instances, keyed by unique IDs.
-   * @type Object.<String, Function>
+   * Plugin instances, keyed by DOM element.
+   * @type Map.<HTMLElement, Object>
    */
-  instances = {}
+  instances = new Map()
 
   /**
    * Initialize Foundation by scanning for all plugins passed to this function, and initializing them. Plugins can be passed in two ways:
@@ -76,8 +75,7 @@ class Foundation {
       const Plugin = this.plugins[plugin];
 
       document.querySelectorAll(`[data-${plugin}]`).forEach(elem => {
-        const id = uuid();
-        this.instances[id] = new Plugin(elem, null, id);
+        this.instances.set(elem, new Plugin(elem, null));
       });
     }
   }
@@ -98,8 +96,7 @@ class Foundation {
     }
 
     if (elem instanceof Element) {
-      const id = elem.getAttribute('data-foundation-id');
-      return this.instances[id] || null;
+      return this.instances.get(elem);
     }
   }
 }
